@@ -54,23 +54,15 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    TYPE = 258,                    /* TYPE  */
-    IF = 259,                      /* IF  */
-    ELSE = 260,                    /* ELSE  */
-    WHILE = 261,                   /* WHILE  */
-    DO = 262,                      /* DO  */
-    FOR = 263,                     /* FOR  */
-    ID = 264,                      /* ID  */
-    NUM = 265,                     /* NUM  */
-    INC = 266,                     /* INC  */
-    DEC = 267,                     /* DEC  */
-    AND = 268,                     /* AND  */
-    OR = 269,                      /* OR  */
-    EQOP = 270,                    /* EQOP  */
-    RELOP = 271,                   /* RELOP  */
-    NOT = 272,                     /* NOT  */
-    UMINUS = 273,                  /* UMINUS  */
-    LOWER_THAN_ELSE = 274          /* LOWER_THAN_ELSE  */
+    ID = 258,                      /* ID  */
+    NUM = 259,                     /* NUM  */
+    RELOP = 260,                   /* RELOP  */
+    ASSIGN = 261,                  /* ASSIGN  */
+    OR = 262,                      /* OR  */
+    AND = 263,                     /* AND  */
+    NOT = 264,                     /* NOT  */
+    EOL = 265,                     /* EOL  */
+    UMINUS = 266                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -79,27 +71,27 @@ extern int yydebug;
 #define YYEOF 0
 #define YYerror 256
 #define YYUNDEF 257
-#define TYPE 258
-#define IF 259
-#define ELSE 260
-#define WHILE 261
-#define DO 262
-#define FOR 263
-#define ID 264
-#define NUM 265
-#define INC 266
-#define DEC 267
-#define AND 268
-#define OR 269
-#define EQOP 270
-#define RELOP 271
-#define NOT 272
-#define UMINUS 273
-#define LOWER_THAN_ELSE 274
+#define ID 258
+#define NUM 259
+#define RELOP 260
+#define ASSIGN 261
+#define OR 262
+#define AND 263
+#define NOT 264
+#define EOL 265
+#define UMINUS 266
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 87 "tac.y"
+ char *str; 
+
+#line 92 "y.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

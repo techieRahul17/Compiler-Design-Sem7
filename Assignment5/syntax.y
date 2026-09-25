@@ -3,9 +3,24 @@
 
 int yylex(void);
 void yyerror(const char *s);
+
+extern int   yylineno;
+extern char *yytext;
 %}
 
-%token TYPE IF ELSE WHILE RELOP ID NUM
+%token TYPE IF ELSE WHILE DO FOR ID NUM
+%token INC DEC AND OR EQOP RELOP NOT
+
+%left  OR
+%left  AND
+%left  EQOP
+%left  RELOP
+%left  '+' '-'
+%left  '*' '/' '%'
+%right NOT UMINUS
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %%
 
@@ -20,36 +35,63 @@ stmt        : decl_stmt
             | assign_stmt
             | if_stmt
             | while_stmt
+            | do_stmt
+            | for_stmt
             | block
+            | ';'
             ;
 
 block       : '{' stmt_list '}'
+            | '{' '}'
             ;
 
-decl_stmt   : TYPE id_list ';'
+/* Declaration statement:  int i, a = 5; */
+decl_stmt   : TYPE decl_list ';'
             ;
 
-id_list     : id_list ',' ID
-            | ID
+decl_list   : decl_list ',' declarator
+            | declarator
             ;
 
-assign_stmt : ID '=' expr ';'
+declarator  : ID
+            | ID '=' expr
             ;
 
-if_stmt     : IF '(' bool_expr ')' stmt
-            | IF '(' bool_expr ')' stmt ELSE stmt
+/* Assignment statement:  i = i + 1;   i++; */
+assign_stmt : simple_stmt ';'
             ;
 
-while_stmt  : WHILE '(' bool_expr ')' stmt
+simple_stmt : ID '=' expr
+            | ID INC
+            | ID DEC
             ;
 
-bool_expr   : expr RELOP expr
+/* Conditional statements:  if, if-else */
+if_stmt     : IF '(' expr ')' stmt %prec LOWER_THAN_ELSE
+            | IF '(' expr ')' stmt ELSE stmt
             ;
 
-expr        : expr '+' expr
+/* Looping statements:  while, do-while, for */
+while_stmt  : WHILE '(' expr ')' stmt
+            ;
+
+do_stmt     : DO stmt WHILE '(' expr ')' ';'
+            ;
+
+for_stmt    : FOR '(' simple_stmt ';' expr ';' simple_stmt ')' stmt
+            ;
+
+expr        : expr OR expr
+            | expr AND expr
+            | expr EQOP expr
+            | expr RELOP expr
+            | expr '+' expr
             | expr '-' expr
             | expr '*' expr
             | expr '/' expr
+            | expr '%' expr
+            | NOT expr
+            | '-' expr %prec UMINUS
             | '(' expr ')'
             | ID
             | NUM
@@ -58,7 +100,7 @@ expr        : expr '+' expr
 %%
 
 void yyerror(const char *s) {
-    printf("Syntax Error\n");
+    printf("Syntax Error at line %d near '%s'\n", yylineno, yytext);
 }
 
 int main(void) {
